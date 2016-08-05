@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+
+cd $(dirname $0)/..
+. scripts/common
+
+if [ -x "$(which wrapdocker)" ]; then
+    wrapdocker > /tmp/docker.log 2>&1
+    docker ps
+fi
+
+./scripts/warm >/dev/null
+
+find -depth -name '*.pyc' -o -name '__pycache__' -exec rm -rf {} \;
+mkdir -p /var/lib/cattle
+
+TMP=$(mktemp -d --tmpdir=/scratch)
+
+trap "rm -rf $TMP" exit
+
+rsync -a --exclude .tox ./ $TMP
+pushd $TMP
+
+echo $PATH
+DOCKER_TEST=true tox -e flake8
+DOCKER_TEST=true tox -e py27
+
+popd
+rsync -a --delete $TMP/.tox/ .tox

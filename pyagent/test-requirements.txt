@@ -1,0 +1,6 @@
+flake8==2.5.1
+setuptools
+pytest
+datadiff==1.1.5
+pytest-mock==0.7.0
+mock==1.1.2
