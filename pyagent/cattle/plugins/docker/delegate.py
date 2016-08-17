@@ -32,6 +32,7 @@ def ns_exec(pid, event):
     data = None
 
     env = {}
+    #in come customized docker like alidocker use with open('/host/proc/{}/environ'.format(pid)) as f:
     with open('/proc/{}/environ'.format(pid)) as f:
         for line in f.read().split('\0'):
             if not len(line):
